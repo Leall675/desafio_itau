@@ -28,7 +28,7 @@ public class TransacaoController {
     public ResponseEntity<List<TransacaoDTO>> listarTransacoes() {
         List<TransacaoDTO> transacao = transacaoService.listarTransacoes();
         if (transacao.isEmpty()) {
-            return ResponseEntity.unprocessableEntity().build();
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
         }
         return ResponseEntity.ok(transacao);
     }

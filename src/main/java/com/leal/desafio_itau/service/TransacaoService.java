@@ -1,10 +1,12 @@
 package com.leal.desafio_itau.service;
 
+import com.leal.desafio_itau.dto.EstatisticaResponseDTO;
 import com.leal.desafio_itau.dto.TransacaoDTO;
 import com.leal.desafio_itau.model.Transacao;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
@@ -35,6 +37,23 @@ public class TransacaoService {
 
     public void deletarTransacoes() {
         queue.clear();
+    }
+
+    public EstatisticaResponseDTO calcularEstatisticas() {
+        LocalDateTime umMinutoAtras = LocalDateTime.now().minusSeconds(60);
+
+        DoubleSummaryStatistics estatisticas = queue.stream()
+                .filter(transacao -> transacao.getDataHora().isAfter(umMinutoAtras))
+                .mapToDouble(Transacao::getValor)
+                .summaryStatistics();
+
+        return new EstatisticaResponseDTO(
+                estatisticas.getCount(),
+                estatisticas.getSum(),
+                estatisticas.getAverage(),
+                estatisticas.getMin(),
+                estatisticas.getMax()
+        );
     }
 
 }
